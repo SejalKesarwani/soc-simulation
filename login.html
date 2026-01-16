@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC - Security Operations Center Login</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div class="bg-animation">
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+    </div>
+
+    <div class="container">
+        <div class="login-box">
+            <div class="header">
+                <div class="logo">▌ SOC</div>
+                <div class="subtitle">Security Operations Center</div>
+            </div>
+
+            <form>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        placeholder="Enter your username"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        placeholder="Enter your password"
+                        required
+                    >
+                </div>
+
+                <div class="remember-forgot">
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="login-btn">Login</button>
+            </form>
+
+            <div class="divider">OR</div>
+
+            <div class="signup-link">
+                Don't have an account? <a href="#">Request Access</a>
+            </div>
+
+            <div class="system-status">
+                <span class="status-indicator"></span>
+                <span class="online">System Online</span> • All systems operational
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
