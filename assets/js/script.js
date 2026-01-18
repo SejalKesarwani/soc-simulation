@@ -27,8 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Simulate successful login
             alert(`Welcome, ${username}! Login successful.`);
             
-            // Reset form
-            loginForm.reset();
+            // Redirect to dashboard
+            window.location.href = 'dashboard.html';
         });
     }
 
