@@ -37,13 +37,6 @@ const attackTypeDistribution = [
   { name: 'XSS', value: 10 },
 ];
 
-const severityLevels = [
-  { severity: 'Low', count: 18 },
-  { severity: 'Medium', count: 32 },
-  { severity: 'High', count: 24 },
-  { severity: 'Critical', count: 12 },
-];
-
 const PIE_COLORS = ['#60a5fa', '#a855f7', '#22d3ee', '#f472b6', '#c084fc'];
 
 function AnalyticsCharts() {
@@ -97,29 +90,6 @@ function AnalyticsCharts() {
         </div>
       </div>
 
-      <div className="lg:col-span-2 rounded-xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-4 shadow-lg shadow-black/20">
-        <div className="mb-3 flex items-center justify-between text-sm text-gray-200">
-          <span className="font-semibold">Severity Levels</span>
-          <span className="text-gray-400">open incidents</span>
-        </div>
-        <div className="h-80">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={severityLevels} margin={{ top: 10, right: 20, left: 0, bottom: 20 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
-              <XAxis dataKey="severity" stroke="#9ca3af" tick={{ fontSize: 12 }} />
-              <YAxis stroke="#9ca3af" tick={{ fontSize: 12 }} />
-              <Tooltip contentStyle={{ backgroundColor: '#111827', border: '1px solid #1f2937', borderRadius: '0.5rem' }} />
-              <Legend verticalAlign="top" height={30} iconSize={12} wrapperStyle={{ color: '#e5e7eb' }} />
-              <Bar dataKey="count" name="Count" radius={[6, 6, 0, 0]}>
-                <Cell fill="#34d399" />
-                <Cell fill="#fbbf24" />
-                <Cell fill="#fb923c" />
-                <Cell fill="#f87171" />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
     </div>
   );
 }
