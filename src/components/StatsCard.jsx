@@ -11,23 +11,23 @@ function StatsCard({ icon: Icon, title, value, trend, trendValue }) {
   return (
     <div
       className={[
-        'relative overflow-hidden rounded-xl border-2 bg-gradient-to-br from-gray-800 to-gray-900 p-6 shadow-lg shadow-black/20',
+        'relative overflow-hidden rounded-lg sm:rounded-xl border-2 bg-gradient-to-br from-gray-800 to-gray-900 p-4 sm:p-6 shadow-lg shadow-black/20',
         'transition-all duration-300 hover:scale-105 hover:shadow-xl hover:shadow-black/30',
         borderColor,
       ].join(' ')}
     >
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
             {Icon && (
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#1e40af]/20 text-[#1e40af]">
-                <Icon className="h-5 w-5" strokeWidth={2} />
+              <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-lg bg-[#1e40af]/20 text-[#1e40af]">
+                <Icon className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={2} />
               </div>
             )}
-            <h3 className="text-sm font-medium text-gray-400">{title}</h3>
+            <h3 className="text-xs sm:text-sm font-medium text-gray-400">{title}</h3>
           </div>
-          <div className="mb-3">
-            <p className="text-3xl font-bold text-white">{value}</p>
+          <div className="mb-2 sm:mb-3">
+            <p className="text-2xl sm:text-3xl font-bold text-white">{value}</p>
           </div>
           {trend && trendValue && (
             <div className={['inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold', trendBgColor, trendColor].join(' ')}>

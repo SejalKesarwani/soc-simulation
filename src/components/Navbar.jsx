@@ -10,7 +10,7 @@ const navItems = [
 
 const navLinkClasses = ({ isActive }) =>
   [
-    'px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150',
+    'px-2 sm:px-3 py-2 rounded-md text-xs sm:text-sm font-medium transition-colors duration-150',
     isActive ? 'bg-[#1e40af] text-white shadow-sm shadow-blue-900/30' : 'text-gray-300 hover:text-white hover:bg-white/5',
   ].join(' ');
 
@@ -26,8 +26,8 @@ function Navbar() {
     <header className="bg-gray-900 border-b border-white/5 text-slate-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <div className="flex items-center gap-8">
-            <div className="text-lg font-semibold tracking-tight text-white">SOC Dashboard</div>
+          <div className="flex items-center gap-6 md:gap-8">
+            <div className="text-lg md:text-xl font-semibold tracking-tight text-white">SOC Dashboard</div>
             <nav className="hidden md:flex items-center gap-1" aria-label="Primary">
               {navItems.map((item) => (
                 <NavLink key={item.path} to={item.path} className={navLinkClasses} onClick={closeMobile}>
@@ -86,7 +86,7 @@ function Navbar() {
 
             <button
               type="button"
-              className="md:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
+              className="inline-flex md:hidden items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-white/5 focus:outline-none focus:ring-2 focus:ring-[#1e40af]"
               onClick={toggleMobile}
               aria-label="Toggle navigation"
               aria-expanded={mobileOpen}

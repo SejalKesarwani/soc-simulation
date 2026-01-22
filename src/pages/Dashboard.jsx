@@ -37,26 +37,26 @@ const statsData = [
 
 function Dashboard() {
   return (
-    <div className="space-y-8">
-      <section className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div className="space-y-6 sm:space-y-8 px-3 sm:px-4 md:px-6 lg:px-8 py-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-white mb-4">Analytics</h2>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-3 sm:mb-4">Analytics</h2>
         <AnalyticsCharts />
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold text-white mb-4">Recent Incidents</h2>
+        <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-3 sm:mb-4">Recent Incidents</h2>
         {mockIncidents.length === 0 ? (
           <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-gray-300">
             No incidents found.
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {mockIncidents.map((incident) => (
               <IncidentCard
                 key={incident.id}

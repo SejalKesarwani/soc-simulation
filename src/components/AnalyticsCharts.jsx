@@ -41,13 +41,13 @@ const PIE_COLORS = ['#60a5fa', '#a855f7', '#22d3ee', '#f472b6', '#c084fc'];
 
 function AnalyticsCharts() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-4 shadow-lg shadow-black/20">
-        <div className="mb-3 flex items-center justify-between text-sm text-gray-200">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-3 sm:p-4 shadow-lg shadow-black/20">
+        <div className="mb-2 sm:mb-3 flex items-center justify-between text-xs sm:text-sm text-gray-200">
           <span className="font-semibold">Incidents (Last 24h)</span>
-          <span className="text-gray-400">per hour</span>
+          <span className="text-gray-400 hidden sm:inline">per hour</span>
         </div>
-        <div className="h-72">
+        <div className="h-64 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={incidentsByHour} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
@@ -61,12 +61,12 @@ function AnalyticsCharts() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-4 shadow-lg shadow-black/20">
-        <div className="mb-3 flex items-center justify-between text-sm text-gray-200">
+      <div className="rounded-xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 p-3 sm:p-4 shadow-lg shadow-black/20">
+        <div className="mb-2 sm:mb-3 flex items-center justify-between text-xs sm:text-sm text-gray-200">
           <span className="font-semibold">Attack Type Distribution</span>
-          <span className="text-gray-400">last 24h</span>
+          <span className="text-gray-400 hidden sm:inline">last 24h</span>
         </div>
-        <div className="h-72">
+        <div className="h-64 sm:h-72">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

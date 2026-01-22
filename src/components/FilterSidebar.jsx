@@ -78,7 +78,7 @@ function FilterSidebar({ onFilterChange = () => {} }) {
   };
 
   return (
-    <aside className="w-full max-w-xs space-y-4 bg-slate p-4 text-white rounded-xl border border-white/10">
+    <aside className="w-full max-w-xs lg:max-w-none lg:w-64 shrink-0 space-y-3 sm:space-y-4 bg-slate p-3 sm:p-4 text-white rounded-xl border border-white/10">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Filter className="h-4 w-4 text-blue-300" />
@@ -168,18 +168,18 @@ function FilterSidebar({ onFilterChange = () => {} }) {
         />
       </Section>
 
-      <div className="flex gap-2 pt-1">
+      <div className="flex flex-col sm:flex-row gap-2 pt-1">
         <button
           type="button"
           onClick={handleApply}
-          className="flex-1 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          className="w-full sm:w-auto flex-1 rounded-lg bg-blue-600 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
         >
           Apply Filters
         </button>
         <button
           type="button"
           onClick={handleClear}
-          className="flex-1 rounded-lg bg-white/10 px-4 py-2 text-sm font-semibold text-gray-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
+          className="w-full sm:w-auto flex-1 rounded-lg bg-white/10 px-3 sm:px-4 py-2 text-xs sm:text-sm font-semibold text-gray-200 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/30"
         >
           Clear All
         </button>
