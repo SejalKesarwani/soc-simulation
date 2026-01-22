@@ -1,5 +1,6 @@
 import StatsCard from '../components/StatsCard.jsx';
 import IncidentCard from '../components/IncidentCard.jsx';
+import AnalyticsCharts from '../components/AnalyticsCharts.jsx';
 import { AlertTriangle, Shield, CheckCircle, Activity } from 'lucide-react';
 import { mockIncidents } from '../utils/mockIncidents.js';
 
@@ -41,6 +42,11 @@ function Dashboard() {
         {statsData.map((stat, index) => (
           <StatsCard key={index} {...stat} />
         ))}
+      </section>
+
+      <section>
+        <h2 className="text-2xl font-bold text-white mb-4">Analytics</h2>
+        <AnalyticsCharts />
       </section>
 
       <section>
