@@ -1,5 +1,7 @@
 import StatsCard from '../components/StatsCard.jsx';
+import IncidentCard from '../components/IncidentCard.jsx';
 import { AlertTriangle, Shield, CheckCircle, Activity } from 'lucide-react';
+import { mockIncidents } from '../utils/mockIncidents.js';
 
 const statsData = [
   {
@@ -32,15 +34,6 @@ const statsData = [
   },
 ];
 
-const recentIncidents = [
-  { id: 1, title: 'Malware detected on workstation-42', severity: 'Critical', time: '5m ago' },
-  { id: 2, title: 'Unauthorized access attempt', severity: 'High', time: '12m ago' },
-  { id: 3, title: 'Suspicious network traffic', severity: 'Medium', time: '28m ago' },
-  { id: 4, title: 'Failed login attempts detected', severity: 'Low', time: '1h ago' },
-  { id: 5, title: 'DDoS attack mitigated', severity: 'Critical', time: '2h ago' },
-  { id: 6, title: 'Policy violation detected', severity: 'Medium', time: '3h ago' },
-];
-
 function Dashboard() {
   return (
     <div className="space-y-8">
@@ -52,30 +45,29 @@ function Dashboard() {
 
       <section>
         <h2 className="text-2xl font-bold text-white mb-4">Recent Incidents</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {recentIncidents.map((incident) => (
-            <div
-              key={incident.id}
-              className="rounded-xl border border-white/10 bg-gradient-to-br from-gray-800 to-gray-900 p-4 shadow-lg shadow-black/20 hover:border-white/20 transition-colors"
-            >
-              <div className="flex items-start justify-between mb-2">
-                <span
-                  className={[
-                    'rounded-full px-2 py-0.5 text-xs font-semibold',
-                    incident.severity === 'Critical' && 'bg-red-500/20 text-red-400 border border-red-500/30',
-                    incident.severity === 'High' && 'bg-orange-500/20 text-orange-400 border border-orange-500/30',
-                    incident.severity === 'Medium' && 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30',
-                    incident.severity === 'Low' && 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
-                  ].join(' ')}
-                >
-                  {incident.severity}
-                </span>
-                <span className="text-xs text-gray-400">{incident.time}</span>
-              </div>
-              <h3 className="text-sm font-medium text-white">{incident.title}</h3>
-            </div>
-          ))}
-        </div>
+        {mockIncidents.length === 0 ? (
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-gray-300">
+            No incidents found.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {mockIncidents.map((incident) => (
+              <IncidentCard
+                key={incident.id}
+                id={incident.id}
+                attackType={incident.attackType}
+                severity={incident.severity}
+                sourceIP={incident.sourceIP}
+                target={incident.target}
+                timestamp={incident.timestamp}
+                status={incident.status}
+                description={incident.description}
+                onViewDetails={() => console.log('View details for', incident.id)}
+                onMarkResolved={() => console.log('Mark resolved', incident.id)}
+              />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
