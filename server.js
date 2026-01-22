@@ -5,6 +5,7 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const authRoutes = require('./backend/routes/auth');
 const incidentRoutes = require('./backend/routes/incidents');
+const dashboardRoutes = require('./backend/routes/dashboard');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -40,6 +41,9 @@ app.use('/api/auth', authRoutes);
 
 // Incident routes
 app.use('/api/incidents', incidentRoutes);
+
+// Dashboard routes
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 Error Handler
 app.use((req, res) => {
