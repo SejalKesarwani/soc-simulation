@@ -1,6 +1,10 @@
 import React, { useState, useCallback, useRef } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
 import useSocket from './hooks/useSocket';
+import { 
+  showCriticalAlert, 
+  showHighSeverityAlert, 
+  showInfoToast 
+} from './utils/toastConfig';
 
 // Optional: Sound notification for critical threats
 const playAlertSound = () => {
@@ -38,51 +42,16 @@ const Dashboard = () => {
       return newIncidents;
     });
 
-    // Show toast notification for Critical incidents
+    // Show toast notification based on severity
     if (incident.severity === 'Critical' || incident.severity === 'critical') {
-      toast.error(
-        <div>
-          <strong>🚨 Critical Incident!</strong>
-          <p>{incident.title || incident.description || 'New critical threat detected'}</p>
-        </div>,
-        {
-          duration: 5000,
-          position: 'top-right',
-          style: {
-            background: '#dc2626',
-            color: '#fff',
-          },
-        }
-      );
+      showCriticalAlert(incident);
       
       // Play alert sound for critical threats
       playAlertSound();
     } else if (incident.severity === 'High' || incident.severity === 'high') {
-      toast(
-        <div>
-          <strong>⚠️ High Severity Incident</strong>
-          <p>{incident.title || incident.description || 'New high severity threat'}</p>
-        </div>,
-        {
-          duration: 4000,
-          position: 'top-right',
-          style: {
-            background: '#f97316',
-            color: '#fff',
-          },
-        }
-      );
+      showHighSeverityAlert(incident);
     } else {
-      toast(
-        <div>
-          <strong>📋 New Incident</strong>
-          <p>{incident.title || incident.description || 'New incident reported'}</p>
-        </div>,
-        {
-          duration: 3000,
-          position: 'top-right',
-        }
-      );
+      showInfoToast(incident.title || incident.description || 'New incident reported');
     }
   }, []);
 
@@ -124,8 +93,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-6">
-      <Toaster />
-      
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center justify-between">
