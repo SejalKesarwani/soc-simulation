@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./backend/routes/auth');
 const incidentRoutes = require('./backend/routes/incidents');
 const dashboardRoutes = require('./backend/routes/dashboard');
+const { apiLimiter } = require('./backend/middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,6 +26,9 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
+
+// Rate limiting middleware for all /api routes
+app.use('/api/', apiLimiter);
 
 // Routes
 app.get('/api/test', (req, res) => {
