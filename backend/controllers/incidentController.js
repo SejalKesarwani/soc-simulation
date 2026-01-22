@@ -78,6 +78,147 @@ const getAllIncidents = async (req, res) => {
   }
 };
 
+/**
+ * Create new incident
+ * Body params:
+ *   - attackType: required
+ *   - severity: required
+ *   - sourceIP: required
+ *   - targetSystem: required
+ *   - description: optional
+ *   - detectedBy: optional
+ */
+const createIncident = async (req, res) => {
+  try {
+    const { attackType, severity, sourceIP, targetSystem, description, detectedBy } = req.body;
+
+    // Validate required fields
+    if (!attackType || !severity || !sourceIP || !targetSystem) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields: attackType, severity, sourceIP, targetSystem',
+      });
+    }
+
+    // Create new incident
+    const incident = new Incident({
+      attackType,
+      severity,
+      sourceIP,
+      targetSystem,
+      description,
+      detectedBy: detectedBy || 'Auto-Detection',
+    });
+
+    // Save to database
+    await incident.save();
+
+    // Return created incident
+    res.status(201).json({
+      success: true,
+      message: 'Incident created successfully',
+      data: incident,
+    });
+  } catch (error) {
+    console.error('Error in createIncident:', error);
+    res.status(400).json({
+      success: false,
+      message: 'Error creating incident',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Update incident by ID
+ * Params:
+ *   - id: incident ID
+ * Body params: any incident fields to update
+ */
+const updateIncident = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Find incident by ID and update
+    const incident = await Incident.findByIdAndUpdate(id, updateData, {
+      new: true, // Return updated document
+      runValidators: true, // Run schema validators
+    });
+
+    // Check if incident exists
+    if (!incident) {
+      return res.status(404).json({
+        success: false,
+        message: 'Incident not found',
+      });
+    }
+
+    // Return updated incident
+    res.status(200).json({
+      success: true,
+      message: 'Incident updated successfully',
+      data: incident,
+    });
+  } catch (error) {
+    console.error('Error in updateIncident:', error);
+    res.status(400).json({
+      success: false,
+      message: 'Error updating incident',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Mark incident as resolved
+ * Params:
+ *   - id: incident ID
+ */
+const markAsResolved = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find incident by ID and update status and resolvedAt
+    const incident = await Incident.findByIdAndUpdate(
+      id,
+      {
+        status: 'Resolved',
+        resolvedAt: new Date(),
+      },
+      {
+        new: true, // Return updated document
+        runValidators: true, // Run schema validators
+      }
+    );
+
+    // Check if incident exists
+    if (!incident) {
+      return res.status(404).json({
+        success: false,
+        message: 'Incident not found',
+      });
+    }
+
+    // Return updated incident
+    res.status(200).json({
+      success: true,
+      message: 'Incident marked as resolved',
+      data: incident,
+    });
+  } catch (error) {
+    console.error('Error in markAsResolved:', error);
+    res.status(400).json({
+      success: false,
+      message: 'Error resolving incident',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   getAllIncidents,
+  createIncident,
+  updateIncident,
+  markAsResolved,
 };
