@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const navItems = [
   { name: 'Dashboard', path: '/dashboard' },
@@ -17,10 +19,27 @@ const navLinkClasses = ({ isActive }) =>
 function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMobile = () => setMobileOpen((open) => !open);
   const closeMobile = () => setMobileOpen(false);
   const toggleProfile = () => setProfileOpen((open) => !open);
+
+  const handleLogout = () => {
+    // Remove token from localStorage
+    localStorage.removeItem('token');
+    
+    // Show success toast
+    toast.success('Logged out successfully');
+    
+    // Close profile dropdown
+    setProfileOpen(false);
+    
+    // Redirect to login page
+    setTimeout(() => {
+      navigate('/login');
+    }, 500);
+  };
 
   return (
     <header className="bg-gray-900 border-b border-white/5 text-slate-100">
@@ -77,7 +96,12 @@ function Navbar() {
                     Settings
                   </button>
                   <div className="h-px bg-white/10" />
-                  <button className="block w-full px-4 py-2 text-left text-sm text-red-300 hover:bg-white/5" role="menuitem">
+                  <button 
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm text-red-300 hover:bg-white/5 hover:text-red-200 transition-colors" 
+                    role="menuitem"
+                  >
+                    <LogOut className="h-4 w-4" />
                     Logout
                   </button>
                 </div>
