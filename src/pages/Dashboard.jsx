@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api.js';
 import StatsCard from '../components/StatsCard.jsx';
 import IncidentCard from '../components/IncidentCard.jsx';
 import AnalyticsCharts from '../components/AnalyticsCharts.jsx';
@@ -46,7 +47,7 @@ function Dashboard() {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('http://localhost:5001/api/incidents');
+        const response = await axios.get(API_ENDPOINTS.INCIDENTS);
         setIncidents(response.data.incidents || response.data || []);
       } catch (err) {
         console.error('Error fetching incidents:', err);
