@@ -1,37 +1,77 @@
-const { createServer } = require('http');
-const { Server } = require('socket.io');
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const connectDB = require('./config/db');
+const authRoutes = require('./backend/routes/auth');
+const incidentRoutes = require('./backend/routes/incidents');
+const dashboardRoutes = require('./backend/routes/dashboard');
+const { apiLimiter } = require('./backend/middleware/rateLimiter');
 
-// Create HTTP server
-const httpServer = createServer();
+const app = express();
+const PORT = process.env.PORT || 5000;
 
-// Create Socket.io instance with CORS configuration
-const io = new Server(httpServer, {
-  cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
-  }
+// Connect to MongoDB
+connectDB();
+
+// CORS Configuration
+const corsOptions = {
+  origin: 'http://localhost:5173',
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+// Middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('combined'));
+
+// Rate limiting middleware for all /api routes
+app.use('/api/', apiLimiter);
+
+// Routes
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server running' });
 });
 
-// Handle client connections
-io.on('connection', (socket) => {
-  console.log(`Client connected with socket ID: ${socket.id}`);
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
 
-  // Handle disconnect event
-  socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
+// Incident routes
+app.use('/api/incidents', incidentRoutes);
+
+// Dashboard routes
+app.use('/api/dashboard', dashboardRoutes);
+
+// 404 Error Handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  res.status(statusCode).json({
+    error: {
+      message: message,
+      status: statusCode,
+      timestamp: new Date().toISOString(),
+    },
   });
 });
 
-// Function to emit new incident to all clients
-function emitNewIncident(incident) {
-  io.emit('newIncident', incident);
-}
-
-// Start server on port 5001
-const PORT = 5001;
-httpServer.listen(PORT, () => {
-  console.log(`Socket.io server listening on port ${PORT}`);
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`CORS enabled for http://localhost:5173`);
 });
 
-// Export io instance and helper function
-module.exports = { io, emitNewIncident };
+module.exports = app;
