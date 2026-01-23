@@ -13,13 +13,13 @@ const connectDB = async () => {
     const mongodbUri = process.env.MONGODB_URI;
 
     if (!mongodbUri) {
-      throw new Error('MONGODB_URI is not defined in environment variables');
+      console.log(
+        `${colors.yellow}⚠ MongoDB URI not configured, running without database${colors.reset}`
+      );
+      return;
     }
 
-    await mongoose.connect(mongodbUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    await mongoose.connect(mongodbUri);
 
     console.log(
       `${colors.green}✓ MongoDB Connected Successfully${colors.reset}`
@@ -30,7 +30,10 @@ const connectDB = async () => {
       `${colors.red}✗ MongoDB Connection Error${colors.reset}`,
       error.message
     );
-    process.exit(1);
+    console.log(
+      `${colors.yellow}⚠ Server will continue without database${colors.reset}`
+    );
+    // Don't exit - allow server to run without DB for development
   }
 };
 

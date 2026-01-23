@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { Mail, Lock, Eye, EyeOff, Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -50,6 +51,20 @@ function Login() {
     }
   };
 
+  const showToast = (message, type = 'success') => {
+    const toastDiv = document.createElement('div');
+    toastDiv.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transition-all duration-300 ${
+      type === 'success' ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+    }`;
+    toastDiv.textContent = message;
+    document.body.appendChild(toastDiv);
+    
+    setTimeout(() => {
+      toastDiv.style.opacity = '0';
+      setTimeout(() => toastDiv.remove(), 300);
+    }, 3000);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validateForm();
@@ -61,11 +76,33 @@ function Login() {
 
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log('Login attempt:', { ...formData, rememberMe });
-      navigate('/dashboard');
+      const response = await axios.post('http://localhost:5001/api/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+
+      // Store JWT token in localStorage
+      localStorage.setItem('token', response.data.token);
+      
+      // Show success toast
+      showToast('Login successful!', 'success');
+      
+      // Redirect to dashboard
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 500);
     } catch (error) {
       console.error('Login failed:', error);
+      
+      // Show error toast
+      const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
+      showToast(errorMessage, 'error');
+      
+      // Clear password field
+      setFormData((prev) => ({ ...prev, password: '' }));
+      
+      // Set error in form
+      setErrors((prev) => ({ ...prev, password: 'Invalid credentials' }));
     } finally {
       setLoading(false);
     }

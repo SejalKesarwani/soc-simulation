@@ -1,4 +1,4 @@
-const Incident = require('../models/Incident');
+const Incident = require('../models/Incident.cjs');
 
 /**
  * Get all incidents with filters and pagination

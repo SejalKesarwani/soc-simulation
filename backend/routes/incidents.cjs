@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
-const Incident = require('../models/Incident');
+const { protect } = require('../middleware/auth.cjs');
+const Incident = require('../models/Incident.cjs');
 
 /**
  * GET /api/incidents

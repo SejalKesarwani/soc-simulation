@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const { protect } = require('../middleware/auth');
-const { getStats } = require('../controllers/dashboardController');
+const { protect } = require('../middleware/auth.cjs');
+const { getStats } = require('../controllers/dashboardController.cjs');
 
 /**
  * GET /api/dashboard/stats

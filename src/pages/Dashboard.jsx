@@ -46,7 +46,7 @@ function Dashboard() {
       try {
         setLoading(true);
         setError(null);
-        const response = await axios.get('http://localhost:5000/api/incidents');
+        const response = await axios.get('http://localhost:5001/api/incidents');
         setIncidents(response.data.incidents || response.data || []);
       } catch (err) {
         console.error('Error fetching incidents:', err);

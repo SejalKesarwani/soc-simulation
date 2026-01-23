@@ -2,11 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const connectDB = require('./config/db');
-const authRoutes = require('./backend/routes/auth');
-const incidentRoutes = require('./backend/routes/incidents');
-const dashboardRoutes = require('./backend/routes/dashboard');
-const { apiLimiter } = require('./backend/middleware/rateLimiter');
+const connectDB = require('./config/db.cjs');
+const authRoutes = require('./backend/routes/auth.cjs');
+const incidentRoutes = require('./backend/routes/incidents.cjs');
+const dashboardRoutes = require('./backend/routes/dashboard.cjs');
+const { apiLimiter } = require('./backend/middleware/rateLimiter.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,7 +16,16 @@ connectDB();
 
 // CORS Configuration
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };
@@ -27,8 +36,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
 
-// Rate limiting middleware for all /api routes
-app.use('/api/', apiLimiter);
+// Rate limiting middleware for all /api routes (disabled for development)
+// app.use('/api/', apiLimiter);
 
 // Routes
 app.get('/api/test', (req, res) => {
