@@ -1,0 +1,183 @@
+# ========================================
+# SOC Simulation Docker Compose Configuration
+# ========================================
+# Usage:
+#   Development: docker-compose up -d
+#   Production:  docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#   Stop:        docker-compose down
+#   With logs:   docker-compose up
+#   Rebuild:     docker-compose up --build
+
+version: "3.8"
+
+services:
+  # ========================================
+  # MongoDB Database Service
+  # ========================================
+  mongodb:
+    image: mongo:7.0
+    container_name: soc-mongodb
+    restart: unless-stopped
+    environment:
+      # MongoDB root credentials (change in production)
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-adminpassword}
+      MONGO_INITDB_DATABASE: soc_system
+    ports:
+      - "27017:27017"
+    volumes:
+      # Persist MongoDB data
+      - mongodb_data:/data/db
+      # Optional: MongoDB configuration
+      - mongodb_config:/data/configdb
+      # Optional: Initialization scripts
+      # - ./mongo-init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - soc-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ========================================
+  # Backend API Service
+  # ========================================
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: soc-backend
+    restart: unless-stopped
+    environment:
+      # Server Configuration
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 5000
+
+      # Database - connects to MongoDB container
+      MONGODB_URI: mongodb://${MONGO_ROOT_USERNAME:-admin}:${MONGO_ROOT_PASSWORD:-adminpassword}@mongodb:27017/soc_system?authSource=admin
+
+      # JWT Configuration
+      JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_change_in_production}
+      JWT_EXPIRE: ${JWT_EXPIRE:-7d}
+
+      # CORS Configuration
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:5173}
+
+      # Rate Limiting
+      RATE_LIMIT_WINDOW: ${RATE_LIMIT_WINDOW:-15}
+      RATE_LIMIT_MAX_REQUESTS: ${RATE_LIMIT_MAX_REQUESTS:-100}
+
+      # Socket.io
+      SOCKET_PORT: 5001
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    volumes:
+      # Mount source code for development (hot reload)
+      # Comment out for production
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - soc-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5000/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ========================================
+  # Frontend Service
+  # ========================================
+  frontend:
+    image: node:18-alpine
+    container_name: soc-frontend
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      # Vite configuration
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:5000/api}
+      VITE_SOCKET_URL: ${VITE_SOCKET_URL:-http://localhost:5001}
+    ports:
+      - "5173:5173"
+    volumes:
+      # Mount frontend source code
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    depends_on:
+      - backend
+    networks:
+      - soc-network
+
+  # ========================================
+  # Redis Cache (Optional)
+  # ========================================
+  # Uncomment if you need Redis for caching or session storage
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: soc-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   volumes:
+  #     - redis_data:/data
+  #   networks:
+  #     - soc-network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "ping"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+
+  # ========================================
+  # Nginx Reverse Proxy (Optional - Production)
+  # ========================================
+  # Uncomment for production deployment
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: soc-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #   volumes:
+  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  #     - ./nginx/ssl:/etc/nginx/ssl:ro
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   networks:
+  #     - soc-network
+
+# ========================================
+# Networks
+# ========================================
+networks:
+  soc-network:
+    driver: bridge
+    name: soc-simulation-network
+
+# ========================================
+# Volumes
+# ========================================
+volumes:
+  mongodb_data:
+    name: soc-mongodb-data
+  mongodb_config:
+    name: soc-mongodb-config
+  # redis_data:
+  #   name: soc-redis-data

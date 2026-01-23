@@ -1,0 +1,86 @@
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const morgan = require('morgan');
+const connectDB = require('./config/db.cjs');
+const authRoutes = require('./backend/routes/auth.cjs');
+const incidentRoutes = require('./backend/routes/incidents.cjs');
+const dashboardRoutes = require('./backend/routes/dashboard.cjs');
+const { apiLimiter } = require('./backend/middleware/rateLimiter.cjs');
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Connect to MongoDB
+connectDB();
+
+// CORS Configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    const allowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+
+// Middleware
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(morgan('combined'));
+
+// Rate limiting middleware for all /api routes (disabled for development)
+// app.use('/api/', apiLimiter);
+
+// Routes
+app.get('/api/test', (req, res) => {
+  res.json({ message: 'Server running' });
+});
+
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Authentication routes
+app.use('/api/auth', authRoutes);
+
+// Incident routes
+app.use('/api/incidents', incidentRoutes);
+
+// Dashboard routes
+app.use('/api/dashboard', dashboardRoutes);
+
+// 404 Error Handler
+app.use((req, res) => {
+  res.status(404).json({ error: 'Route not found' });
+});
+
+// Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  res.status(statusCode).json({
+    error: {
+      message: message,
+      status: statusCode,
+      timestamp: new Date().toISOString(),
+    },
+  });
+});
+
+// Start Server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`CORS enabled for http://localhost:5173`);
+});
+
+module.exports = app;

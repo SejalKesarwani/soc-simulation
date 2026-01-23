@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SOC Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <header class="top-bar">
+        <h2>Security Operations Center</h2>
+        <span class="analyst">Analyst: Admin</span>
+    </header>
+
+    <section class="cards">
+        <div class="card total">Total Alerts <span id="total">0</span></div>
+        <div class="card high">High <span id="high">0</span></div>
+        <div class="card medium">Medium <span id="medium">0</span></div>
+        <div class="card low">Low <span id="low">0</span></div>
+    </section>
+
+    <section class="incidents">
+        <h3>Incident Logs</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Attack Type</th>
+                    <th>Severity</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody id="incident-table">
+            </tbody>
+        </table>
+    </section>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
