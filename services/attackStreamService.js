@@ -7,14 +7,20 @@ const attackPatternController = require('../utils/attackPatterns');
  * Emits 'newAttack' events at intervals controlled by AttackPatternController
  */
 class AttackStreamService extends EventEmitter {
-  constructor() {
+  constructor(options = {}) {
     super();
     this.interval = null;
     this.isRunning = false;
+    this.autoStart = options.autoStart || false;
     
     // Statistics tracking
     this.totalAttacksGenerated = 0;
     this.startTime = null;
+    
+    // Auto-start if enabled
+    if (this.autoStart) {
+      this.start();
+    }
   }
 
   /**
@@ -29,7 +35,7 @@ class AttackStreamService extends EventEmitter {
     this.isRunning = true;
     this.startTime = Date.now();
     this.totalAttacksGenerated = 0;
-    console.log('AttackStreamService started with pattern:', attackPatternController.currentPattern);
+    console.log('✓ AttackStreamService started with pattern:', attackPatternController.currentPattern);
 
     const generateAttackWithInterval = () => {
       // Get interval from attack pattern controller
@@ -61,7 +67,7 @@ class AttackStreamService extends EventEmitter {
       this.interval = null;
     }
     this.isRunning = false;
-    console.log('AttackStreamService stopped');
+    console.log('✓ AttackStreamService stopped');
   }
 
   /**
